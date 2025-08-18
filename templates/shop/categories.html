@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Categories{% endblock %}
+
+{% block content %}
+<main class="container">
+    <h1 class="py-4 text-center">Our Categories</h1>
+    <div class="row px-3 px-md-0">
+        {% for category in categories %}
+        <div class="col-md-3 mb-4">
+            <div class="card h-100">
+                <img {% if category.image %} src="{{ category.image.url }}" 
+                {% else %}
+                src="https://placehold.co/300"
+                {% endif %}
+                class="card-img-top" alt="{{ category.name }}"
+                style="aspect-ratio: 4/3; object-fit: cover;">
+                <div class="card-body text-center">
+                    <p class="card-title fw-medium">{{ category.name }}</p>
+                    <a href="{% url 'shop:product_list_by_category' category.slug %}" class="btn btn-primary">View Products</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}

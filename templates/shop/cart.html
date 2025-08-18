@@ -1,0 +1,144 @@
+{% extends "base.html" %} {% load humanize %} {% block title %}Your Shopping
+Cart{% endblock %} {% block content %}
+<main class="container">
+  <h1 class="mb-4 text-center py-4">Your Shopping Cart</h1>
+
+  {% if cart_items %}
+  <div class="text-end my-3">
+    <a href="{% url 'shop:cart_clear' %}" class="text-danger"> clear all</a>
+  </div>
+  <div class="table-responsive" style="overflow-x: auto">
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: auto; min-width: 242px">Product</th>
+          <th style="width: auto">Quantity</th>
+          <th style="width: auto; white-space: nowrap">Unit Price</th>
+          <th style="width: auto; white-space: nowrap">Total</th>
+          <th style="width: auto">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart_items %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center">
+              {% with item.product.images.first as image %} {% if image %}
+              <img
+                src="{{ image.image.url }}"
+                alt="{{ item.product.name }}"
+                style="width: 50px; height: 50px; object-fit: cover"
+                class="me-3"
+              />
+              {% else %}
+              <img
+                src="https://placehold.co/50"
+                alt="{{ item.product.name }}"
+                style="width: 50px; height: 50px; object-fit: cover"
+                class="me-3"
+              />
+              {% endif %} {% endwith %}
+              <a
+                href="{% url 'shop:product_detail' item.product.slug %}"
+                style="word-break: break-word"
+                >{{ item.product.name }}</a
+              >
+            </div>
+          </td>
+          <td>
+            <form
+              class="d-flex update-form"
+              action="{% url 'shop:cart_update' %}"
+              method="post"
+              data-product-id="{{item.product.id}}"
+            >
+              {% csrf_token %}
+              <input
+                type="number"
+                name="quantity"
+                value="{{ item.quantity }}"
+                min="1"
+                max="{{item.product.stock}}"
+                class="form-control form-control-sm"
+                style="width: 45px"
+              />
+              <button
+                type="submit"
+                class="btn btn-sm btn-outline-primary ms-2 updateCartBtn"
+              >
+                <i class="bi bi-check"></i>
+              </button>
+            </form>
+          </td>
+          <td style="white-space: nowrap">GH₵ {{ item.price|intcomma }}</td>
+          <td style="white-space: nowrap">
+            GH₵
+            <span class="total-price">{{ item.total_price|intcomma }}</span>
+          </td>
+          <td>
+            <a
+              class="btn btn-sm btn-outline-danger remove-btn"
+              data-url="{% url 'shop:cart_remove' %}"
+              data-product-id="{{item.product.id}}"
+              >Remove</a
+            >
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2"><strong></strong></td>
+          <td class=""><strong>Total:</strong></td>
+          <td style="white-space: nowrap">
+            <strong>GH₵</strong>
+            <strong id="cart-total">{{ cart_total|intcomma }}</strong>
+          </td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="d-flex justify-content-between">
+    <a href="{% url 'shop:product_list' %}" class="btn btn-outline-primary"
+      >Continue Shopping</a
+    >
+    <a href="{% url 'shop:checkout' %}" class="btn btn-primary"
+      >Proceed to Checkout</a
+    >
+  </div>
+  {% else %} {% comment %}
+  <div class="alert alert-info">
+    Your cart is empty.
+    <a href="{% url 'shop:product_list' %}">Continue shopping</a>.
+  </div>
+  {% endcomment %}
+
+  <div class="text-center py-6">
+    <img
+      width="200"
+      src="http://www.dev.athenainstitute.com/Atropos%2021-BS5-WB05SR527/demo.files/svg/illustrations/shop.svg"
+      alt="cart empty"
+    />
+    <h1 class="mt-4">Your cart is empty</h1>
+    <p class="lead">Before placing an order, add products to your cart.</p>
+    <a href="{% url 'shop:product_list' %}" class="btn btn-primary rounded-0">
+      <span>Continue shopping</span>
+      <svg
+        class="transform-flip-x-rtl"
+        height="18px"
+        viewBox="0 0 16 16"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z"
+        ></path>
+      </svg>
+    </a>
+  </div>
+  {% endif %}
+</main>
+{% endblock %} {% block scripts %} {% endblock %}
