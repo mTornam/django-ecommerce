@@ -1,0 +1,59 @@
+<!-- To be moved to order app -->
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/test.css' %}">
+
+<main class="container">
+  <h1 class="mb-4">Checkout</h1>
+
+  <div class="row g-5 g-md-0">
+    <div class="col-md-5">
+      <form action="#!" method="post">
+        {% csrf_token %}
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5>Contact Details</h5>
+          </div>
+          <div class="card-body">
+            {{ contact_form.as_p }}
+          </div>
+          <div class="card-header">
+            <h5>Shipping Details</h5>
+          </div>
+          <div class="card-body">
+            {{ shipping_form.as_p }}
+          </div>
+        </div>
+        <input type="submit" value="Pay">
+      </form>
+    </div>
+
+    <div class="col-md-5 ms-auto">
+      <div class="card">
+        <div class="card-header">
+          <h5>Order Summary</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush">
+            {% for item in cart.items.all %}
+            <li class="list-group-item d-flex justify-content-between">
+              <div>
+                {{ item.quantity }} x {{ item.product.name }}
+              </div>
+              <div>
+                GH₵ {{ item.get_subtotal }}
+              </div>
+            </li>
+            {% endfor %}
+            <li class="list-group-item d-flex justify-content-between fw-bold">
+              <div>Total</div>
+              <div>GH₵ {{ cart.get_total }}</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

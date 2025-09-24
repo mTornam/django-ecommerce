@@ -1,0 +1,45 @@
+.main {
+    display: flex;
+    gap: 40px;
+    padding: 80px 120px;
+}
+
+form {
+    flex: 1;
+}
+
+form label{
+    display: block;
+    padding-bottom: 8px;
+}
+
+form input, 
+form select {
+    width: 100%;
+    padding: 4px 8px;
+}
+
+form input[type="radio"]{
+    width: initial;
+    margin-top: initial;
+}
+
+form p{
+    margin-bottom: 6px;
+}
+.summary {
+    width: fit-content;
+}
+
+.card-header {
+    padding: 4px 1em;
+}
+
+.card-header h5 {
+    margin-bottom: 0;
+}
+
+#id_delivery > div{
+    display: inline-block;
+    margin-right: 12px;
+}

@@ -41,7 +41,7 @@
             <h3 class="text-primary">GH₵ {{ product.price|intcomma }}</h3>
             
             <div class="mb-4">
-                <form action="{% url 'shop:cart_add' %}" method="post">
+                <form action="#!" method="post">
                     {% csrf_token %}
                     <div class="input-group mb-3" style="max-width: 200px;">
                         <input type="number" name="quantity" class="form-control" value="1" min="1" max="{{product.stock}}">

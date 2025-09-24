@@ -1,6 +1,5 @@
-import json
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
@@ -11,16 +10,14 @@ import requests
 
 from shop.utils import generate_reference
 
-from .cart import Cart
-from .models import Category, Product, ProductImage, Order, OrderItem
-from .forms import CheckoutForm
+from .models import Category, Product, Order, OrderItem
 # Create your views here.
 
 
 def home(request):
     featured_categories = Category.objects.all()[:4]
     featured_products = Product.objects.filter(
-        available=True).order_by('-created')[:8]
+        available=True).order_by('-created_at')[:8]
     return render(request, 'shop/home.html', {
         'featured_categories': featured_categories,
         'featured_products': featured_products,
@@ -71,122 +68,85 @@ def product_detail(request, slug):
         'related_products': related_products,
     })
 
+# ------------------- THIS WHOLE SECTION TO BE MOVED TO ORDER APP ----------------------
+
+
+# to be moved to order app
+def checkout(request):
+    from cart.utils import get_cart
+    from .forms import ShippingForm, ContactForm
+    
+    cart = get_cart(request)
+    if request.method == 'POST':
+        contact_form = ContactForm(request.POST)
+        shipping_form = ShippingForm(request.POST)
+        if contact_form.is_valid() and shipping_form.is_valid():
+            pass
+    else:
+        contact_form = ContactForm()
+        shipping_form = ShippingForm()
+
+    context = {
+        'cart': cart,
+        'contact_form': contact_form,
+        'shipping_form': shipping_form,
+    }
+    return render(request, 'cart/checkout.html', context)
+
+# Payment Section
+@csrf_exempt
+def initiate_paystack_checkout(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        amount = round(float(request.POST.get('amount')) * 100, 2)
+        name = request.POST.get('name') 
+
+        reference = generate_reference()
+
+        headers = {
+            "Authorization": f"Bearer {settings.PAYSTACK_SK}",
+            "Content-Type": "application/json"
+        }
+
+        payload = {
+            "email": email,
+            "amount": amount,
+            "currency": "GHS",
+            "reference": reference,
+            "callback_url": "",
+            "metadata": {
+                "custom_fields": [
+                    {
+                        "display_name": "Full Name",
+                        "variable_name": "full_name",
+                        "value": name
+                    }
+                ]
+            }            
+        }
+
+        response = requests.post("https://api.paystack.co/transaction/initialize",
+                                 json=payload, headers=headers)
+
+        data = response.json()
+        print(data)
+        if data.get('status'):
+            checkout_url = data['data']['authorization_url']
+            return redirect(checkout_url)
+        return JsonResponse({'error': 'Failed to initiate payment'}, status=400)
+
+def payment_callback(request):
+    # Optionally verify payment here using Paystack's verify endpoint
+    return HttpResponse("Payment complete!")
+
 
 def get_cart(request):
     if 'cart' not in request.session:
         request.session['cart'] = {}
     return request.session['cart']
 
-
-def cart_detail(request):
-    cart = Cart(request)
-    cart_total = cart.total
-
-    return render(request, 'shop/cart.html', {
-        'cart_items': cart,
-        'cart_total': cart_total
-    })
-
-
-def _cart_add(request):
-    try:
-        data = json.loads(request.body)
-        product_id = data.get('product_id')
-        product = get_object_or_404(Product, id=product_id)
-        cart = Cart(request)
-
-        quantity = data.get('quantity')
-        if quantity:
-            success, message = cart.add(product=product, quantity=quantity)
-        else:
-            success, message = cart.add(product=product)
-
-        if success:
-            return JsonResponse({
-                'success': True,
-                'message': message,
-                'cart_count': cart.__len__()
-            })
-        else:
-            return JsonResponse({'success': False, 'message': message}, status=400)
-    except Exception as e:
-        return JsonResponse({'success': False, 'message': str(e)}, status=500)
-    
-def cart_add(request):
-    data = json.loads(request.body)
-    product_id = data.get('product_id')
-    product = get_object_or_404(Product, id=product_id)
-    cart = Cart(request)
-
-    qty = data.get('quantity')
-    if qty: status, msg = cart._add(product, qty)
-    else: status, msg = cart._add(product)
-
-    if status != "error":
-        return JsonResponse({
-            'success': True,
-            'type': status,
-            'message': msg,
-            'cart_count': cart.__len__()
-        })
-    else:
-        return JsonResponse({'success': False, 'message': msg}, status=400)
-
-
-
-def cart_update(request):
-    try:
-        data = json.loads(request.body)
-        product_id = data.get('product_id')
-        quantity = int(data.get('quantity'))
-        cart = Cart(request)
-        success, message = cart.update(
-            product_id=product_id, quantity=quantity)
-
-        if success:
-            return JsonResponse({
-                'success': True,
-                'message': message,
-                'cart_count': cart.__len__(),
-                'product_total': cart.get_product_total(product_id),
-                'cart_total': cart.total
-            })
-        else:
-            return JsonResponse({'success': False, 'message': message}, status=400)
-
-    except Exception as e:
-        return JsonResponse({'success': False, 'message': str(e)}, status=500)
-
-
-def cart_remove(request):
-    try:
-        data = json.loads(request.body)
-        product_id = data.get('product_id')
-        cart = Cart(request)
-        success, message = cart.remove(product_id=product_id)
-
-        if success:
-            return JsonResponse({
-                'success': True,
-                'message': message,
-                'cart_count': cart.__len__(),
-                'cart_total': cart.total
-            })
-        else:
-            return JsonResponse({'success': False, 'message': message}, status=400)
-        
-    except Exception as e:
-        return JsonResponse({'success': False, 'message': str(e)}, status=500)
-    
-
-def cart_clear(request):
-    cart = Cart(request)
-    cart.clear()
-
-    return redirect('shop:cart_detail')
-
-
-def checkout(request):
+# Not in use LEAVE FOR REFERENCE   
+def old_checkout(request):
     cart = get_cart(request)
 
     cart_items = []
@@ -249,49 +209,3 @@ def checkout(request):
         'total_price': total_price,
         'form': form,
     })
-
-# Payment Section
-@csrf_exempt
-def initiate_paystack_checkout(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        amount = round(float(request.POST.get('amount')) * 100, 2)
-        name = request.POST.get('name') 
-
-        reference = generate_reference()
-
-        headers = {
-            "Authorization": f"Bearer {settings.PAYSTACK_SK}",
-            "Content-Type": "application/json"
-        }
-
-        payload = {
-            "email": email,
-            "amount": amount,
-            "currency": "GHS",
-            "reference": reference,
-            "callback_url": "",
-            "metadata": {
-                "custom_fields": [
-                    {
-                        "display_name": "Full Name",
-                        "variable_name": "full_name",
-                        "value": name
-                    }
-                ]
-            }            
-        }
-
-        response = requests.post("https://api.paystack.co/transaction/initialize",
-                                 json=payload, headers=headers)
-
-        data = response.json()
-        print(data)
-        if data.get('status'):
-            checkout_url = data['data']['authorization_url']
-            return redirect(checkout_url)
-        return JsonResponse({'error': 'Failed to initiate payment'}, status=400)
-
-def payment_callback(request):
-    # Optionally verify payment here using Paystack's verify endpoint
-    return HttpResponse("Payment complete!")

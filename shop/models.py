@@ -32,8 +32,8 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField(default=50)
     available = models.BooleanField(default=True)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
         return self.name
@@ -60,17 +60,12 @@ class ProductImage(models.Model):
     
 
 class Order(models.Model):
-    STATUS_CHOICES = [
-        ("pending", "Pending"),
-        ("processing", "Processing"),
-        ("completed", "Completed"),
-        ("cancelled", "Cancelled"),
-    ]
-
-    PAYMENT_METHODS = [
-        ("card", "Credit/Debit Card"),
-        ("mobile_money", "Mobile Money"),
-    ]
+    class Order_status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        PAID = "paid", "Paid"
+        PROCESSING = "processing", "Processing"
+        COMPLETED = "completed", "Completed"
+        CANCELLED = "cancelled", "Cancelled"
 
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -78,10 +73,9 @@ class Order(models.Model):
     phone = models.CharField(max_length=20)
     address = models.TextField()
     city = models.CharField(max_length=100)
-    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    status = models.CharField(max_length=20, choices=Order_status, default=Order_status.PENDING)
     total_paid = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
