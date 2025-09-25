@@ -22,7 +22,7 @@
       </div>
     </div>
     <div class="cart-body">
-      <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-between cart-info">
         <span class="text-danger fw-semibold" id="clear-cart">Clear</span>
         <span class="fw-semibold text-muted"> <span id="count">0</span> item(s)</span>
       </div>
@@ -63,14 +63,14 @@
   <!-- Templates -->
   <template id="cart-item-template">
     <div class="bt-hr">
-      <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-between gap-2">
         <!-- cart item -->
         <div>
           <!-- details -->
           <b class="p-name">product name</b>
           <span class="p-qty">x1</span>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 align-items-baseline">
           <!-- price & delete -->
           <b class="p-price">$35.40</b>
           <button class="delete-btn">
@@ -125,7 +125,7 @@
     height: 100%;
     display: grid;
     grid-template-rows: auto 1fr auto;
-    width: 380px;
+    width: 425px;
     float: right;
     box-shadow: -4px 0px 20px 0px rgb(42 42 42 / 8%);
   }
@@ -147,15 +147,28 @@
     border: none;
   }
 
+  .cart-body {
+    height: 100%;
+    overflow: auto;
+  }
+
+  .cart-info {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: white;
+  }
+
   .delete-btn {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+    background-color: transparent;
 
     color: rgba(255, 0, 0, 0.744);
-    /* border-radius: 0.25em; */
+    border-radius: 0.25em;
     line-height: 0;
-    /* padding: 2px; */
+    padding: 2px;
     margin: 0;
     border: none;
   }
@@ -203,5 +216,11 @@
 
   #clear-cart {
     cursor: pointer;
+  }
+
+  @media (max-width:450px) {
+    .cart {
+      width: 100%;
+    }
   }
 </style>

@@ -1,0 +1,97 @@
+/* inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+/* National Park */
+@import url('https://fonts.googleapis.com/css2?family=National+Park:wght@200..800&display=swap');
+
+body,
+html {
+    font-family: "National Park", sans-serif;
+    min-height: 100dvh;
+}
+
+/* Basic styling */
+body {
+    padding-top: 72px;
+    display: flex;
+    flex-direction: column;
+}
+
+#messages {
+    position: fixed;
+    right: 0;
+    top: 73px;
+    z-index: 999;
+}
+
+#content{
+    flex: 1;
+}
+
+input[type="number"][name="quantity"] {
+    width: 63px;
+    text-align: center;
+    padding: 0 5px;
+    flex: none;
+}
+
+table tr>td {
+    vertical-align: middle;
+}
+
+.hero-section {
+    margin-top: -20px;
+}
+
+.carousel-item img {
+    max-height: 500px;
+    object-fit: contain;
+}
+
+/* Product cards */
+.card {
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    white-space: normal;
+    font-weight: 500;
+}
+
+
+.color-swatch {
+    border-radius: 50% !important;
+    padding: 0 !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+}
+.color-swatch:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s;
+}
+
+
+/* Form styling */
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+#qty-form button[type="submit"]{
+    visibility: hidden;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section .display-4 {
+        font-size: 2rem;
+    }
+
+    .hero-section .lead {
+        font-size: 1rem;
+    }
+}
