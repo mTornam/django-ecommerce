@@ -63,7 +63,7 @@
                         <p class="card-text fw-bold">GH₵ {{ product.price|intcomma }}</p>
                         <div class="mt-auto">
                             <!-- VIEW PRODUCT URL-->
-                            <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-primary">View Details</a>
+                            <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-primary">View</a>
                             <!-- ADD TO CART BUTTON-->
                             <button class="ms-1 btn add-to-cart" data-product-id="{{product.id}}" title="add to cart">
                                 <i class="bi bi-cart-fill"></i>

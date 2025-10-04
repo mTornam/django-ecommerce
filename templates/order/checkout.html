@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{% static 'css/test.css' %}">
 
 <main class="container">
-  <h1 class="mb-4">Checkout</h1>
+  <h1 class="mb-4">Checkout (Order)</h1>
 
   <div class="row g-5 g-md-0">
     <div class="col-md-5">
@@ -13,16 +13,10 @@
         {% csrf_token %}
         <div class="card mb-4">
           <div class="card-header">
-            <h5>Contact Details</h5>
+            <h5>Confirm Details</h5>
           </div>
           <div class="card-body">
-            {{ contact_form.as_p }}
-          </div>
-          <div class="card-header">
-            <h5>Shipping Details</h5>
-          </div>
-          <div class="card-body">
-            {{ shipping_form.as_p }}
+            {{ form.as_p }}
           </div>
         </div>
         <input type="submit" value="Pay">

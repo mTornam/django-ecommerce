@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form action="{% url 'pay_init' %}" method="post">
+        <div>Amount to pay: GHS {{ amount }}</div>
+        <div>
+            <label for="email">Confirm email</label>
+            <input name="email" type="email" value="{{email}}">
+        </div>
+        <div>
+            <input type="submit" value="Pay">
+        </div>
+    </form>
+{% endblock %}
+    

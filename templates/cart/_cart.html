@@ -47,7 +47,12 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
             </svg>
           </a>
-          <a href="{% url 'shop:checkout' %}" id="checkout-btn">
+
+{% comment %}
+            <a href="{% url 'shop:checkout' %}" id="checkout-btn">
+  
+{% endcomment %}
+            <a href="{% url 'checkout' %}" id="checkout-btn">
             <span>checkout</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" height="16" stroke-width="2.5"
               stroke="currentColor" class="size-6">
@@ -208,10 +213,6 @@
 
   button svg {
     pointer-events: none;
-  }
-
-  #cart-items {
-    height: 100%;
   }
 
   #clear-cart {

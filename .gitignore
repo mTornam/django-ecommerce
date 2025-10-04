@@ -1,2 +1,3 @@
 .env
 templates\blank.html
+beautyshop\settings.py
