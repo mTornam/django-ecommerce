@@ -70,6 +70,7 @@ def paystack_init(request):
             "callback_url": request.build_absolute_uri(reverse('verify_pay')),
         }
         response = requests.post(f"{PAYSTACK_BASE_URL}/transaction/initialize", json=payload, headers=headers).json()
+        print(response)
         if response.get('status'):
             auth_url = response['data']['authorization_url']
             return redirect(auth_url)
