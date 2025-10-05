@@ -153,7 +153,7 @@ PAYSTACK_SK = os.getenv("PAYSTACK_SECRET_KEY")
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
-        "rest_framework.renderers.BrowsableAPIRenderer",  # Ensure this is included
+        "rest_framework.renderers.BrowsableAPIRenderer",
     ],
 }
 

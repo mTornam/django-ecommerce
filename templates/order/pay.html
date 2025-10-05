@@ -1,15 +1,49 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <form action="{% url 'pay_init' %}" method="post">
-        <div>Amount to pay: GHS {{ amount }}</div>
-        <div>
-            <label for="email">Confirm email</label>
-            <input name="email" type="email" value="{{email}}">
+<div class="d-flex align-items-center justify-content-center" style="min-height: 60vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4">Payment Confirmation</h2>
+                        <hr class="mb-4">
+
+                        <form action="{% url 'pay_init' %}" method="post">
+                            {% csrf_token %}
+
+                            <div class="mb-4">
+                                <div class="text-center">
+                                    <h5 class="text-muted mb-2">Amount to pay</h5>
+                                    <h3 class="text-primary fw-bold">GHS {{ amount }}</h3>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="email" class="form-label fw-semibold">Confirm Email Address</label>
+                                <input name="email" type="email" class="form-control form-control-lg"
+                                       value="{{ email }}" placeholder="Enter your email address" required>
+                                <div class="form-text">We'll send your payment confirmation to this email</div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-credit-card me-2"></i>Proceed to Payment
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                <i class="bi bi-shield-lock me-1"></i>
+                                Your payment information is secure and encrypted
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-            <input type="submit" value="Pay">
-        </div>
-    </form>
+    </div>
+</div>
 {% endblock %}
-    

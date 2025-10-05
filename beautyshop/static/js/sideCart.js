@@ -10,6 +10,22 @@ function toggleSideCart() {
   document.querySelector('body').classList.toggle('no-scroll', sideCart.classList.contains('open'))
 }
 
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
 
 async function getCart(refresh=false) {
     if (cartCache && !refresh) {
@@ -28,7 +44,10 @@ async function getCart(refresh=false) {
 async function addToCart(product, quantity) {
     await fetch('/api/carts/', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
         body: JSON.stringify({product, quantity})
     });
     await getCart(true)
@@ -37,7 +56,10 @@ async function addToCart(product, quantity) {
 async function updateCartItem(product_id, quantity) {
     await fetch(`/api/carts/items/${product_id}`, {
         method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
         body: JSON.stringify({quantity})
     });
     await getCart(true)
@@ -46,7 +68,10 @@ async function updateCartItem(product_id, quantity) {
 async function removeCartItem(product_id) {
     await fetch(`/api/carts/items/${product_id}`, {
         method: 'DELETE',
-        headers: {'Content-Type': 'application/json'}
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        }
     });
     await getCart(true)
 }
@@ -54,7 +79,10 @@ async function removeCartItem(product_id) {
 async function clearCart() {
     await fetch('/api/carts/', {
         method: 'DELETE',
-        headers: {'Content-Type': 'application/json'}
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        }
     })
     await getCart(true)
 }
